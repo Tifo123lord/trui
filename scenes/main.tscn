@@ -1,0 +1,403 @@
+[gd_scene load_steps=28 format=3]
+
+[ext_resource type="Script" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://scenes/zombie.tscn" id="3_zombie"]
+[ext_resource type="Texture2D" path="res://assets/interior.png" id="4_bg"]
+[ext_resource type="Texture2D" path="res://assets/sprites/zombies/walker.png" id="5_walker"]
+[ext_resource type="Texture2D" path="res://assets/sprites/zombies/crawler.png" id="6_crawler"]
+[ext_resource type="Texture2D" path="res://assets/sprites/zombies/screamer.png" id="7_screamer"]
+[ext_resource type="Texture2D" path="res://assets/sprites/zombies/runner.png" id="8_runner"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_move.png" id="b_move"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_move_pressed.png" id="b_move_p"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_action.png" id="b_action"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_action_pressed.png" id="b_action_p"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_small.png" id="b_small"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_small_pressed.png" id="b_small_p"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_fire.png" id="b_fire"]
+[ext_resource type="Texture2D" path="res://assets/ui/btn_fire_pressed.png" id="b_fire_p"]
+
+[sub_resource type="RectangleShape2D" id="Shape_floor"]
+size = Vector2(1577, 40)
+
+[sub_resource type="RectangleShape2D" id="Shape_wall"]
+size = Vector2(20, 720)
+
+[sub_resource type="CircleShape2D" id="Circle_move"]
+radius = 44.0
+
+[sub_resource type="CircleShape2D" id="Circle_action"]
+radius = 48.0
+
+[sub_resource type="CircleShape2D" id="Circle_small"]
+radius = 36.0
+
+[sub_resource type="CircleShape2D" id="Circle_fire"]
+radius = 58.0
+
+[sub_resource type="StyleBoxFlat" id="Style_bar_bg"]
+bg_color = Color(0.05, 0.08, 0.08, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.38, 0.34, 1)
+
+[sub_resource type="StyleBoxFlat" id="Style_health"]
+bg_color = Color(0.74, 0.22, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="Style_stamina"]
+bg_color = Color(0.62, 0.7, 0.36, 1)
+
+[node name="Deadland" type="Node2D"]
+script = ExtResource("1_main")
+
+[node name="Backdrop" type="Sprite2D" parent="."]
+z_index = -10
+position = Vector2(0, 8)
+scale = Vector2(0.85, 0.85)
+texture = ExtResource("4_bg")
+centered = false
+
+[node name="World" type="StaticBody2D" parent="."]
+collision_layer = 1
+collision_mask = 0
+
+[node name="Floor" type="CollisionShape2D" parent="World"]
+position = Vector2(788.5, 580)
+shape = SubResource("Shape_floor")
+
+[node name="WallLeft" type="CollisionShape2D" parent="World"]
+position = Vector2(-10, 360)
+shape = SubResource("Shape_wall")
+
+[node name="WallRight" type="CollisionShape2D" parent="World"]
+position = Vector2(1587, 360)
+shape = SubResource("Shape_wall")
+
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(300, 560)
+
+[node name="Walker" parent="." instance=ExtResource("3_zombie")]
+position = Vector2(720, 560)
+display_name = "Walker"
+sprite_texture = ExtResource("5_walker")
+body_size = Vector2(46, 136)
+max_health = 80
+patrol_speed = 30.0
+chase_speed = 62.0
+detection_range = 380.0
+attack_range = 58.0
+attack_damage = 10
+attack_cooldown = 1.4
+
+[node name="Crawler" parent="." instance=ExtResource("3_zombie")]
+position = Vector2(980, 560)
+display_name = "Crawler"
+sprite_texture = ExtResource("6_crawler")
+body_size = Vector2(120, 56)
+max_health = 50
+patrol_speed = 18.0
+chase_speed = 48.0
+detection_range = 230.0
+attack_range = 72.0
+attack_damage = 8
+attack_cooldown = 1.2
+
+[node name="Screamer" parent="." instance=ExtResource("3_zombie")]
+position = Vector2(1180, 560)
+display_name = "Screamer"
+sprite_texture = ExtResource("7_screamer")
+body_size = Vector2(46, 140)
+max_health = 60
+patrol_speed = 26.0
+chase_speed = 70.0
+detection_range = 450.0
+attack_range = 58.0
+attack_damage = 7
+attack_cooldown = 1.5
+is_screamer = true
+
+[node name="Runner" parent="." instance=ExtResource("3_zombie")]
+position = Vector2(1420, 560)
+display_name = "Runner"
+sprite_texture = ExtResource("8_runner")
+body_size = Vector2(50, 120)
+max_health = 55
+patrol_speed = 40.0
+chase_speed = 175.0
+detection_range = 520.0
+attack_range = 60.0
+attack_damage = 9
+attack_cooldown = 0.9
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="Root" type="Control" parent="HUD"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Stats" type="Control" parent="HUD/Root"]
+layout_mode = 0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = 264.0
+offset_bottom = 70.0
+mouse_filter = 2
+
+[node name="HealthLabel" type="Label" parent="HUD/Root/Stats"]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 18.0
+theme_override_font_sizes/font_size = 13
+text = "HP"
+
+[node name="HealthBar" type="ProgressBar" parent="HUD/Root/Stats"]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 3.0
+offset_right = 224.0
+offset_bottom = 15.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("Style_bar_bg")
+theme_override_styles/fill = SubResource("Style_health")
+value = 100.0
+show_percentage = false
+
+[node name="StaminaLabel" type="Label" parent="HUD/Root/Stats"]
+layout_mode = 0
+offset_top = 24.0
+offset_right = 40.0
+offset_bottom = 42.0
+theme_override_font_sizes/font_size = 13
+text = "STM"
+
+[node name="StaminaBar" type="ProgressBar" parent="HUD/Root/Stats"]
+layout_mode = 0
+offset_left = 44.0
+offset_top = 27.0
+offset_right = 224.0
+offset_bottom = 39.0
+mouse_filter = 2
+theme_override_styles/background = SubResource("Style_bar_bg")
+theme_override_styles/fill = SubResource("Style_stamina")
+value = 100.0
+show_percentage = false
+
+[node name="Objective" type="Label" parent="HUD/Root"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -280.0
+offset_top = 20.0
+offset_right = 280.0
+offset_bottom = 44.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.86, 0.88, 0.82, 1)
+theme_override_font_sizes/font_size = 16
+text = "CLEAR THE WARD"
+horizontal_alignment = 1
+
+[node name="Ammo" type="Label" parent="HUD/Root"]
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -244.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = 44.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(0.95, 0.78, 0.45, 1)
+theme_override_font_sizes/font_size = 16
+text = "AMMO  7 / 21"
+horizontal_alignment = 2
+
+[node name="DeathPanel" type="ColorRect" parent="HUD/Root"]
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.04, 0, 0, 0.72)
+
+[node name="Label" type="Label" parent="HUD/Root/DeathPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(0.85, 0.25, 0.22, 1)
+theme_override_font_sizes/font_size = 56
+text = "YOU DIED"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Touch" type="CanvasLayer" parent="."]
+layer = 2
+
+[node name="Left" type="Node2D" parent="Touch"]
+
+[node name="Right" type="Node2D" parent="Touch"]
+
+[node name="MoveLeft" type="TouchScreenButton" parent="Touch/Left"]
+position = Vector2(28, 604)
+texture_normal = ExtResource("b_move")
+texture_pressed = ExtResource("b_move_p")
+shape = SubResource("Circle_move")
+shape_centered = true
+passby_press = true
+action = "move_left"
+
+[node name="Label" type="Label" parent="Touch/Left/MoveLeft"]
+offset_right = 88.0
+offset_bottom = 88.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 22
+text = "<"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MoveRight" type="TouchScreenButton" parent="Touch/Left"]
+position = Vector2(128, 604)
+texture_normal = ExtResource("b_move")
+texture_pressed = ExtResource("b_move_p")
+shape = SubResource("Circle_move")
+shape_centered = true
+passby_press = true
+action = "move_right"
+
+[node name="Label" type="Label" parent="Touch/Left/MoveRight"]
+offset_right = 88.0
+offset_bottom = 88.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 22
+text = ">"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Crouch" type="TouchScreenButton" parent="Touch/Left"]
+position = Vector2(232, 620)
+texture_normal = ExtResource("b_small")
+texture_pressed = ExtResource("b_small_p")
+shape = SubResource("Circle_small")
+shape_centered = true
+passby_press = false
+action = "crouch"
+
+[node name="Label" type="Label" parent="Touch/Left/Crouch"]
+offset_right = 72.0
+offset_bottom = 72.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 15
+text = "CRCH"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Run" type="TouchScreenButton" parent="Touch/Left"]
+position = Vector2(28, 516)
+texture_normal = ExtResource("b_small")
+texture_pressed = ExtResource("b_small_p")
+shape = SubResource("Circle_small")
+shape_centered = true
+passby_press = false
+action = "run"
+
+[node name="Label" type="Label" parent="Touch/Left/Run"]
+offset_right = 72.0
+offset_bottom = 72.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 15
+text = "RUN"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Fire" type="TouchScreenButton" parent="Touch/Right"]
+position = Vector2(1136, 580)
+texture_normal = ExtResource("b_fire")
+texture_pressed = ExtResource("b_fire_p")
+shape = SubResource("Circle_fire")
+shape_centered = true
+passby_press = false
+action = "shoot"
+
+[node name="Label" type="Label" parent="Touch/Right/Fire"]
+offset_right = 116.0
+offset_bottom = 116.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 15
+text = "FIRE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Melee" type="TouchScreenButton" parent="Touch/Right"]
+position = Vector2(1028, 600)
+texture_normal = ExtResource("b_action")
+texture_pressed = ExtResource("b_action_p")
+shape = SubResource("Circle_action")
+shape_centered = true
+passby_press = false
+action = "attack"
+
+[node name="Label" type="Label" parent="Touch/Right/Melee"]
+offset_right = 96.0
+offset_bottom = 96.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 15
+text = "MELEE"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Jump" type="TouchScreenButton" parent="Touch/Right"]
+position = Vector2(1150, 460)
+texture_normal = ExtResource("b_action")
+texture_pressed = ExtResource("b_action_p")
+shape = SubResource("Circle_action")
+shape_centered = true
+passby_press = false
+action = "jump"
+
+[node name="Label" type="Label" parent="Touch/Right/Jump"]
+offset_right = 96.0
+offset_bottom = 96.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 15
+text = "JUMP"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Reload" type="TouchScreenButton" parent="Touch/Right"]
+position = Vector2(1044, 508)
+texture_normal = ExtResource("b_small")
+texture_pressed = ExtResource("b_small_p")
+shape = SubResource("Circle_small")
+shape_centered = true
+passby_press = false
+action = "reload"
+
+[node name="Label" type="Label" parent="Touch/Right/Reload"]
+offset_right = 72.0
+offset_bottom = 72.0
+mouse_filter = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.88, 1)
+theme_override_font_sizes/font_size = 15
+text = "RLD"
+horizontal_alignment = 1
+vertical_alignment = 1
